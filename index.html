@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <title>முரளி சொல்வடிவ புதிர்</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h5>🌸 ஓம் ஷாந்தி 🌸</h5>
+    <h1>🧠 முரளி சொல்வடிவ புதிர்</h1>
+
+    <button id="admin-toggle">✍️ Admin Panel</button>
+
+    <div id="admin-panel" style="display: none;">
+      <form id="admin-form">
+        <input type="text" id="admin-question" placeholder="கேள்வி" required>
+        <input type="text" id="admin-answer" placeholder="பதில் (ஒரே வார்த்தை)" required>
+        <button type="submit">➕ சேர்க்க</button>
+      </form>
+      <button id="finish-input">✅ முடிந்தது</button>
+    </div>
+
+    <div id="crossword-grid"></div>
+
+    <div id="questions-section">
+      <h2>🤔 கேள்விகள்</h2>
+      <ul id="question-list"></ul>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

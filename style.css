@@ -1,0 +1,148 @@
+/* style.css */
+body {
+  font-family: 'Noto Sans Tamil', sans-serif;
+  background-color: #3ef48a;
+  margin: 0;
+  padding: 10px;
+  text-align: center;
+}
+
+
+.container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 10px;
+  text-align: center;
+}
+
+
+h1 {
+  font-size: 20px;
+  color: #333;
+}
+
+#crossword-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 2px;
+  width: calc(100vw - 20px);    /* 10px on each side */
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  box-sizing: border-box;
+  overflow: hidden;
+  background-color: white;
+}
+
+body {
+  overflow-x: auto;
+}
+
+
+.grid-cell {
+  background-color: white;
+  border: 1px solid #ccc;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+input.grid-input {
+  width: 100%;
+  height: 100%;
+  font-size: 22px;              /* 🔼 Increased size */
+  text-align: center;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: 'Noto Sans Tamil', sans-serif;
+}
+
+
+.grid-correct {
+  background-color: #d4edda;
+}
+
+.grid-wrong {
+  background-color: #f8d7da;
+}
+
+#questions-section {
+  margin-top: 50px;
+  text-align: center; /* ✅ Center-align the section */
+  padding: 0 10px;
+}
+
+h2{
+    font-size: 4rem;
+}
+
+#question-list {
+  list-style: none;
+  padding-left: 0;
+  font-size: 2rem;
+  line-height: 2.0;
+  text-align: center; /* ✅ Keep text itself left-aligned inside centered block */
+  display: inline-block;
+  max-width: 100%;
+}
+
+#admin-panel {
+  margin-top: 20px;
+  margin-bottom: 200px;
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+#admin-panel {
+  margin-bottom: 100px;
+  background: yellow;  /* Just to visualize */
+}
+
+#admin-toggle {
+  margin-bottom: 20px;  /* ✅ Pushes the grid down slightly */
+  padding: 6px 12px;
+  font-size: 16px;
+  border: 1px solid #aaa;
+  background: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
+#admin-form input,
+#admin-form select {
+  margin: 5px;
+  padding: 8px;
+  font-size: 16px;
+  width: 90%;
+  max-width: 300px;
+}
+
+#admin-form button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  font-size: 16px;
+  background: #3ef48a;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+
+@media (min-width: 768px) {
+  h1 {
+    font-size: 26px;
+  }
+
+  #question-list {
+    font-size: 30px;
+  }
+
+  input.grid-input {
+    font-size: 18px;
+  }
+}
