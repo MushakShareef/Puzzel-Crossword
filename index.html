@@ -16,12 +16,14 @@
   </div>
 
   <!-- Crossword Grid -->
-  <div id="crossword-grid" class="grid"></div>
-  <ul id="question-list"></ul>
+    <div id="crossword-grid"></div>
 
-  <!-- Question List -->
-  <h3>❓ கேள்விகள்:</h3>
-  <ul id="question-list"></ul>
+    <div id="question-section">
+      <h2>❓ கேள்விகள்:</h2>
+      <ul id="question-list"></ul>
+    </div>
+
+
 
   <!-- Admin Panel Toggle -->
   <button id="admin-toggle">🔐 நிர்வாகி அனுமதி</button>
@@ -35,6 +37,7 @@
 
     <form id="admin-form" style="display:flex; flex-direction:column; gap:6px; max-width:320px;">
       <input type="text" id="admin-question" placeholder="கேள்வி (தமிழில்)" required>
+      
 
       <input type="text" id="admin-answer" placeholder="பதில் (ஒரே சொல்லாக, தமிழில்)" required>
 

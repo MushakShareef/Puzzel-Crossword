@@ -210,3 +210,50 @@ h2{
   pointer-events: none;
 }
 
+/* Wrapper for the crossword and question list */
+#question-section {
+  margin-top: 15px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  font-size: 1.2rem;
+}
+
+/* Title styling */
+#question-section h3 {
+  margin-bottom: 8px;
+  color: #333;
+  font-size: 1.4rem;
+}
+
+/* Question list styling */
+#question-list {
+  list-style: none;
+  padding-left: 0;
+  line-height: 1.8;
+  font-size: 1.3rem;
+  color: #222;
+  font-weight: 600;
+}
+
+/* Add spacing between list items */
+#question-list li {
+  margin-bottom: 6px;
+}
+
+/* Admin button styling */
+#admin-toggle {
+  margin-top: 12px;
+  padding: 10px 16px;
+  font-size: 1.2rem;
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#admin-toggle:hover {
+  background-color: #f57c00;
+}

@@ -1,5 +1,58 @@
 // script.js — Crossword with Save/Load by Date (Tamil-aware)
 
+
+// 🔗 BK Spiritual backend base URL (Render)
+const BACKEND_URL = "https://bk-spiritual-backend.onrender.com";
+
+
+async function savePuzzleToBackend(key, puzzleData) {
+  // Debug – function call நடந்ததா என்பதை பார்க்க
+  alert("🔔 savePuzzleToBackend called! Trying to send to backend...");
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/crossword/today`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(puzzleData),
+    });
+
+    if (!res.ok) {
+      let msg = `Backend save failed: ${res.status}`;
+      try {
+        const err = await res.json();
+        if (err && err.message) msg = err.message;
+      } catch (e) {
+        // ignore JSON parse error
+      }
+      console.error("❌", msg);
+      alert("❌ Backend save failed: " + msg);
+      return false;
+    }
+
+    console.log("✅ Crossword saved to backend for", key);
+    alert("✅ Crossword saved to backend!");
+    return true;
+  } catch (err) {
+    console.error("❌ Error calling backend:", err);
+    alert("❌ Error calling backend (check console)");
+    return false;
+  }
+}
+
+
+
+// 🔄 (இப்போதைக்கு dummy) — backend load function
+async function loadPuzzleFromBackend(dateKey) {
+  const res = await fetch(`${BACKEND_URL}/api/crossword/today`);
+  if (!res.ok) return null;
+  return await res.json();
+}
+
+
+
+
 const gridSize = 10;
 let grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(null));
 let questions = [];
@@ -386,28 +439,49 @@ function getActiveDateKey() {
   return today.toISOString().split("T")[0];
 }
 
+// நாள் key கண்டுபிடிக்க same function
 function getTodayKey() {
   const today = new Date();
-  return today.toISOString().split("T")[0];
+  return today.toISOString().split('T')[0]; // YYYY-MM-DD
 }
 
-function savePuzzle() {
-  const key = getActiveDateKey();
+// 1) localStorageக்கான helper (இங்க தான் actual save நடக்கும்)
+function savePuzzleLocal(key, puzzleData) {
+  localStorage.setItem(`murli-puzzle-${key}`, JSON.stringify(puzzleData));
+}
+
+async function savePuzzle() {
+  const key = getTodayKey();
   const puzzleData = {
     grid,
     questions,
     date: key
   };
-  localStorage.setItem(`murli-puzzle-${key}`, JSON.stringify(puzzleData));
+
+  // 1) localStorageல சேமிக்கிறது (இது தான் இப்போ use ஆகுது)
+  savePuzzleLocal(key, puzzleData);
+
+  // 2) backend stub க்கு call – இப்போ log மட்டும்
+  await savePuzzleToBackend(key, puzzleData);
 }
 
-function loadPuzzle(dateKey) {
+
+// 1) localStorageல இருந்து data எடுக்கும் helper
+function loadPuzzleLocal(dateKey) {
   const data = localStorage.getItem(`murli-puzzle-${dateKey}`);
-  if (!data) {
+  if (!data) return null;
+  return JSON.parse(data);
+}
+
+// 2) main loadPuzzle – நாளைக்கு backend இருந்து load பண்ணினாலும் இதே பயன்படுத்துவோம்
+function loadPuzzle(dateKey) {
+  const stored = loadPuzzleLocal(dateKey);
+  if (!stored) {
     alert("அந்த தேதிக்கான புதிர் இல்லை.");
     return;
   }
-  const { grid: loadedGrid, questions: loadedQs } = JSON.parse(data);
+
+  const { grid: loadedGrid, questions: loadedQs } = stored;
   grid = loadedGrid;
   questions = loadedQs.map(q => ({
     ...q,
@@ -416,8 +490,9 @@ function loadPuzzle(dateKey) {
   inputModeEnded = true;
   renderGrid();
   renderQuestions();
-  renderQAList();
 }
+
+
 
 function loadSelectedPuzzle() {
   const date = document.getElementById("date-select").value;
