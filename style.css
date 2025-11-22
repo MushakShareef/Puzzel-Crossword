@@ -17,9 +17,22 @@ body {
 
 
 h1 {
-  font-size: 20px;
+  font-size: 26px;
   color: #333;
 }
+
+#date-loader {
+  font-size: 1.8rem;   /* Increase overall font size */
+  font-weight: 600;    /* Make text slightly bold */
+}
+
+#date-loader button,
+#date-loader input {
+  font-size: 1.5rem;   /* Make button & date input text larger */
+  padding: 6px 12px;   /* Bigger clickable area */
+}
+
+
 
 #crossword-grid {
   display: grid;
@@ -171,7 +184,7 @@ h2{
 
 @media (min-width: 768px) {
   h1 {
-    font-size: 26px;
+    font-size: 40px;
   }
 
   #question-list {
