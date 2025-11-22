@@ -34,26 +34,27 @@
       <!-- புதிய வரி: இந்த தேதி என்ன என்பதை காட்ட -->
     <p id="admin-date-info" style="font-weight: 600; margin: 4px 0;"></p>
 
-    <form id="admin-form">
+    <form id="admin-form" style="display:flex; flex-direction:column; gap:6px; max-width:320px;">
       <input type="text" id="admin-question" placeholder="கேள்வி (தமிழில்)" required>
-      <input type="text" id="admin-answer" placeholder="பதில் (ஒரே சொல்லாக)" required>
 
-      <input type="number" id="admin-row" min="0" max="9"
-            placeholder="Row (0 - 9)" required>
+      <input type="text" id="admin-answer" placeholder="பதில் (ஒரே சொல்லாக, தமிழில்)" required>
 
-      <input type="number" id="admin-col" min="0" max="9"
-            placeholder="Col (0 - 9)" required>
+      <div style="display:flex; gap:6px;">
+        <input type="number" id="admin-row" min="0" max="9" placeholder="Row 0-9" style="flex:1;">
+        <input type="number" id="admin-col" min="0" max="9" placeholder="Col 0-9" style="flex:1;">
+      </div>
 
-      <input type="number" id="admin-length" min="1"
-            placeholder="எழுத்துகள் எண்ணிக்கை" required>
+      <div style="display:flex; gap:6px;">
+        <input type="number" id="admin-length" min="1" placeholder="எழுத்துகள் எண்ணிக்கை" style="flex:1;">
+        <select id="admin-direction" style="flex:1;">
+          <option value="➡">➡ (கிடைமட்டம்)</option>
+          <option value="⬇">⬇ (நிலம்பட்டு)</option>
+        </select>
+      </div>
 
-      <select id="admin-direction" required>
-        <option value="➡">கிடைமட்டம் (➡)</option>
-        <option value="⬇">நிலம்பட்டு (⬇)</option>
-      </select>
-
-      <button type="submit">➕ சேர்க்க</button>
+      <button type="submit">➕ இந்தக் கேள்வியை சேர்க்க</button>
     </form>
+
 
 
     <div id="qa-list" style="margin-top: 15px;"></div>

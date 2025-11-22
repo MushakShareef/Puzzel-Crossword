@@ -184,7 +184,7 @@ function renderGrid() {
         const cellData = grid[r][c];
         const input = document.createElement("input");
         input.className = "grid-input";
-        input.maxLength = 5;
+        input.maxLength = 3;
         input.dataset.row = r;
         input.dataset.col = c;
         input.dataset.qIndex = cellData.qIndex;
@@ -194,12 +194,12 @@ function renderGrid() {
         // start as empty (no user input yet)
         cell.classList.add("grid-empty");
          const q = questions[cellData.qIndex];
-          if (q && q.row === r && q.col === c) {
-            const numSpan = document.createElement("span");
-            numSpan.className = "cell-number";
-            numSpan.textContent = cellData.qIndex + 1;
-            cell.appendChild(numSpan);
-          }
+        if (q && q.row === r && q.col === c) {
+          const numSpan = document.createElement("span");
+          numSpan.className = "cell-number";
+          numSpan.textContent = cellData.qIndex + 1;
+          cell.appendChild(numSpan);
+        }
         // (If you already added clue number span, keep that code here too.)
       } else {
         cell.style.background = "#eee";
@@ -312,11 +312,9 @@ toggleBtn.addEventListener("click", () => {
 });
 
 // Admin: add new question/answer
-
-
 document.getElementById("admin-form").addEventListener("submit", (e) => {
   e.preventDefault();
-  if (inputModeEnded) return;
+  if (inputModeEnded) return; // after "முடிந்தது", lock input
 
   const qInput   = document.getElementById("admin-question");
   const aInput   = document.getElementById("admin-answer");
@@ -326,39 +324,40 @@ document.getElementById("admin-form").addEventListener("submit", (e) => {
   const dirInput = document.getElementById("admin-direction");
 
   const question = qInput.value.trim();
-  
-  const row      = parseInt(rowInput.value, 10);  // 0–9
-  const col      = parseInt(colInput.value, 10);  // 0–9
-  const givenLen = parseInt(lenInput.value, 10);
-  const dirName  = dirInput.value;
 
+  // mobile keyboards sometimes insert extra spaces – strip them all:
   const rawAnswer = aInput.value;
   const answer = rawAnswer.replace(/\s+/g, "").trim();
 
+  const row      = Number(rowInput.value);
+  const col      = Number(colInput.value);
+  const givenLen = Number(lenInput.value);
+  const dirName  = dirInput.value;
+
+  // Basic validation
   if (!question || !answer || Number.isNaN(row) || Number.isNaN(col) ||
       Number.isNaN(givenLen) || !dirName) {
-    alert("அனைத்தையும் நிரப்பவும்.");
+    alert("கேள்வி, பதில், Row, Col, Length, Direction எல்லாவற்றையும் நிரப்பவும்.");
     return;
   }
 
   if (row < 0 || row >= gridSize || col < 0 || col >= gridSize) {
-    alert("Row, Col 0 லிருந்து 9 வரை மட்டுமே இருக்க வேண்டும்.");
+    alert("Row மற்றும் Col 0 லிருந்து 9 வரை மட்டுமே இருக்க வேண்டும்.");
     return;
   }
 
-
-
   const letters = splitTamilLetters(answer);
   if (letters.length !== givenLen) {
-    alert(`எழுத்துகள் எண்ணிக்கை தவறு. உண்மையானது: ${letters.length}`);
+    alert(`எழுத்துகள் எண்ணிக்கை தவறாக உள்ளது. உண்மையானது: ${letters.length}`);
     return;
   }
 
   if (!placeWordManual(answer, question, row, col, dirName)) {
-    alert("இந்த இடத்தில் / திசையில் வைக்க முடியவில்லை. வேறு Row/Col அல்லது direction முயற்சி செய்யவும்.");
+    alert("இந்த இடத்தில் / திசையில் வைக்க முடியவில்லை. வேறு Row/Col அல்லது திசை முயற்சி செய்யவும்.");
     return;
   }
 
+  // clear for next question
   qInput.value = "";
   aInput.value = "";
   rowInput.value = "";
@@ -371,6 +370,7 @@ document.getElementById("admin-form").addEventListener("submit", (e) => {
     renderQAList();
   }
 });
+
 
 
 
