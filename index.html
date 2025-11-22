@@ -2,32 +2,62 @@
 <html lang="ta">
 <head>
   <meta charset="UTF-8">
-  <title>முரளி சொல்வடிவ புதிர்</title>
+  <title>Spiritual Tamil Crossword - Murli Game</title>
   <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="container">
-    <h5>🌸 ஓம் ஷாந்தி 🌸</h5>
-    <h1>🧠 முரளி சொல்வடிவ புதிர்</h1>
+  <h1>📖 தெய்வீக தமிழ் முரளி குறுக்கெழுத்துப் புதிர்</h1>
 
-    <button id="admin-toggle">✍️ Admin Panel</button>
+  <!-- Puzzle Date Loader -->
+  <div id="date-loader">
+    <label for="date-select">📅 தேதியை தேர்வு செய்க:</label>
+    <input type="date" id="date-select">
+    <button onclick="loadSelectedPuzzle()">புதிர் Load செய்ய</button>
+    <button onclick="loadSelectedPuzzle()">புதிரை ஏற்று</button>
+  </div>
 
-    <div id="admin-panel" style="display: none;">
-      <form id="admin-form">
-        <input type="text" id="admin-question" placeholder="கேள்வி" required>
-        <input type="text" id="admin-answer" placeholder="பதில் (ஒரே வார்த்தை)" required>
-        <button type="submit">➕ சேர்க்க</button>
-      </form>
-      <button id="finish-input">✅ முடிந்தது</button>
-    </div>
+  <!-- Crossword Grid -->
+  <div id="crossword-grid" class="grid"></div>
+  <ul id="question-list"></ul>
 
-    <div id="crossword-grid"></div>
+  <!-- Question List -->
+  <h3>❓ கேள்விகள்:</h3>
+  <ul id="question-list"></ul>
 
-    <div id="questions-section">
-      <h2>🤔 கேள்விகள்</h2>
-      <ul id="question-list"></ul>
-    </div>
+  <!-- Admin Panel Toggle -->
+  <button id="admin-toggle">🔐 நிர்வாகி அனுமதி</button>
+
+  <!-- Admin Panel -->
+  <div id="admin-panel" style="display:none;">
+    <h3>📝 கேள்வி மற்றும் பதிலை உள்ளிடு</h3>
+
+      <!-- புதிய வரி: இந்த தேதி என்ன என்பதை காட்ட -->
+    <p id="admin-date-info" style="font-weight: 600; margin: 4px 0;"></p>
+
+    <form id="admin-form">
+      <input type="text" id="admin-question" placeholder="கேள்வி (தமிழில்)" required>
+      <input type="text" id="admin-answer" placeholder="பதில் (ஒரே சொல்லாக)" required>
+
+      <input type="number" id="admin-row" min="0" max="9"
+            placeholder="Row (0 - 9)" required>
+
+      <input type="number" id="admin-col" min="0" max="9"
+            placeholder="Col (0 - 9)" required>
+
+      <input type="number" id="admin-length" min="1"
+            placeholder="எழுத்துகள் எண்ணிக்கை" required>
+
+      <select id="admin-direction" required>
+        <option value="➡">கிடைமட்டம் (➡)</option>
+        <option value="⬇">நிலம்பட்டு (⬇)</option>
+      </select>
+
+      <button type="submit">➕ சேர்க்க</button>
+    </form>
+
+
+    <div id="qa-list" style="margin-top: 15px;"></div>
+    <button id="finish-input">✅ முடிந்தது</button>
   </div>
 
   <script src="script.js"></script>
