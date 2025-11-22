@@ -184,7 +184,7 @@ function renderGrid() {
         const cellData = grid[r][c];
         const input = document.createElement("input");
         input.className = "grid-input";
-        input.maxLength = 3;
+        input.maxLength = 5;
         input.dataset.row = r;
         input.dataset.col = c;
         input.dataset.qIndex = cellData.qIndex;
@@ -326,11 +326,14 @@ document.getElementById("admin-form").addEventListener("submit", (e) => {
   const dirInput = document.getElementById("admin-direction");
 
   const question = qInput.value.trim();
-  const answer   = aInput.value.trim();
+  
   const row      = parseInt(rowInput.value, 10);  // 0–9
   const col      = parseInt(colInput.value, 10);  // 0–9
   const givenLen = parseInt(lenInput.value, 10);
   const dirName  = dirInput.value;
+
+  const rawAnswer = aInput.value;
+  const answer = rawAnswer.replace(/\s+/g, "").trim();
 
   if (!question || !answer || Number.isNaN(row) || Number.isNaN(col) ||
       Number.isNaN(givenLen) || !dirName) {
@@ -343,10 +346,7 @@ document.getElementById("admin-form").addEventListener("submit", (e) => {
     return;
   }
 
-  if (answer.includes(" ")) {
-    alert("ஒரே வார்த்தையை மட்டும் உள்ளிடவும்.");
-    return;
-  }
+
 
   const letters = splitTamilLetters(answer);
   if (letters.length !== givenLen) {
