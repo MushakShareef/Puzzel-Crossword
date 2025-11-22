@@ -314,7 +314,7 @@ toggleBtn.addEventListener("click", () => {
 // Admin: add new question/answer
 document.getElementById("admin-form").addEventListener("submit", (e) => {
   e.preventDefault();
-  if (inputModeEnded) return; // after "முடிந்தது", lock input
+  // if (inputModeEnded) return; 
 
   const qInput   = document.getElementById("admin-question");
   const aInput   = document.getElementById("admin-answer");
@@ -324,6 +324,7 @@ document.getElementById("admin-form").addEventListener("submit", (e) => {
   const dirInput = document.getElementById("admin-direction");
 
   const question = qInput.value.trim();
+  
 
   // mobile keyboards sometimes insert extra spaces – strip them all:
   const rawAnswer = aInput.value;
