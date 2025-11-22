@@ -43,14 +43,36 @@ async function savePuzzleToBackend(key, puzzleData) {
 
 
 
-// 🔄 (இப்போதைக்கு dummy) — backend load function
-async function loadPuzzleFromBackend(dateKey) {
-  const res = await fetch(`${BACKEND_URL}/api/crossword/today`);
-  if (!res.ok) return null;
-  return await res.json();
+async function savePuzzleToBackend(key, puzzleData) {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/crossword/today`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(puzzleData),
+    });
+
+    if (!res.ok) {
+      let msg = `Backend save failed: ${res.status}`;
+      try {
+        const err = await res.json();
+        if (err && err.message) msg = err.message;
+      } catch (e) {}
+      console.error("❌", msg);
+      alert("❌ Backend save failed: " + msg);
+      return false;
+    }
+
+    console.log("✅ Crossword saved to backend for", key);
+    alert("✅ Crossword saved to backend!");
+    return true;
+  } catch (err) {
+    console.error("❌ Error calling backend:", err);
+    alert("❌ Error calling backend (check console)");
+    return false;
+  }
 }
-
-
 
 
 const gridSize = 10;
