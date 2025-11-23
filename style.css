@@ -257,3 +257,34 @@ h2{
 #admin-toggle:hover {
   background-color: #f57c00;
 }
+
+#student-controls {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+#student-controls button {
+  padding: 6px 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+#student-controls button:nth-child(1) {
+  background: #22c55e;
+  color: white;
+}
+
+#student-controls button:nth-child(2) {
+  background: #3b82f6;
+  color: white;
+}
+
+#student-controls button:nth-child(3) {
+  background: #ef4444;
+  color: white;
+}

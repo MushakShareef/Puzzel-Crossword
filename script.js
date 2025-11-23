@@ -43,34 +43,21 @@ async function savePuzzleToBackend(key, puzzleData) {
 
 
 
-async function savePuzzleToBackend(key, puzzleData) {
+async function loadPuzzleFromBackend(dateKey) {
+  alert("📥 Trying to load from BACKEND...");  // 👈 Debug alert
+
   try {
-    const res = await fetch(`${BACKEND_URL}/api/crossword/today`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(puzzleData),
-    });
-
+    const res = await fetch(`${BACKEND_URL}/api/crossword/today`);
     if (!res.ok) {
-      let msg = `Backend save failed: ${res.status}`;
-      try {
-        const err = await res.json();
-        if (err && err.message) msg = err.message;
-      } catch (e) {}
-      console.error("❌", msg);
-      alert("❌ Backend save failed: " + msg);
-      return false;
+      console.warn("⚠️ No puzzle found on backend for date:", dateKey);
+      return null;
     }
-
-    console.log("✅ Crossword saved to backend for", key);
-    alert("✅ Crossword saved to backend!");
-    return true;
+    const data = await res.json();
+    console.log("📥 Loaded puzzle from backend:", data);
+    return data;
   } catch (err) {
-    console.error("❌ Error calling backend:", err);
-    alert("❌ Error calling backend (check console)");
-    return false;
+    console.error("❌ Backend load error:", err);
+    return null;
   }
 }
 
@@ -79,6 +66,9 @@ const gridSize = 10;
 let grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(null));
 let questions = [];
 let inputModeEnded = false;
+
+let currentPuzzleDate = null;
+
 
 const directions = [
   { name: "➡", dr: 0, dc: 1 },
@@ -496,34 +486,37 @@ function loadPuzzleLocal(dateKey) {
 }
 
 // 2) main loadPuzzle – நாளைக்கு backend இருந்து load பண்ணினாலும் இதே பயன்படுத்துவோம்
-function loadPuzzle(dateKey) {
-  const stored = loadPuzzleLocal(dateKey);
-  if (!stored) {
-    alert("அந்த தேதிக்கான புதிர் இல்லை.");
+async function loadPuzzle(dateKey) {
+  // 1) முதலில் backend-லிருந்து முயற்சி
+  const data = await loadPuzzleFromBackend(dateKey);
+
+  if (!data) {
+    alert("❗ Backend-ல் இந்த தேதிக்கான புதிர் கிடைக்கவில்லை.");
     return;
   }
 
-  const { grid: loadedGrid, questions: loadedQs } = stored;
+  const { grid: loadedGrid, questions: loadedQs, date } = data;
+
   grid = loadedGrid;
-  questions = loadedQs.map(q => ({
-    ...q,
-    letters: splitTamilLetters(q.a)
-  }));
+  questions = loadedQs;
+  // நீங்கள் முன்பு letters split பண்ணி வைத்திருந்தால், இங்கே map பண்ணலாம்:
+  // questions = loadedQs.map(q => ({ ...q, letters: splitTamilLetters(q.a) }));
+
   inputModeEnded = true;
+  console.log("✅ Puzzle loaded for date:", date || dateKey);
   renderGrid();
   renderQuestions();
 }
 
 
 
-function loadSelectedPuzzle() {
+async function loadSelectedPuzzle() {
   const date = document.getElementById("date-select").value;
-  if (!date) {
-    alert("தேதியைத் தேர்ந்தெடுக்கவும்.");
-    return;
-  }
-  loadPuzzle(date);
+  const key = date || getTodayKey(); // பயனர் தேர்வு செய்யாவிட்டால் இன்று
+
+  await loadPuzzle(key);
 }
+
 
 // Finish input and save puzzle for that date
 document.getElementById("finish-input").addEventListener("click", () => {
@@ -536,16 +529,11 @@ document.getElementById("finish-input").addEventListener("click", () => {
 });
 
 // Auto-load today's puzzle if exists
-window.onload = () => {
+window.onload = async () => {
   const todayKey = getTodayKey();
-  if (localStorage.getItem(`murli-puzzle-${todayKey}`)) {
-    loadPuzzle(todayKey);
-    const dateInput = document.getElementById("date-select");
-    if (dateInput) {
-      dateInput.value = todayKey;
-    }
-  }
+  await loadPuzzle(todayKey);  // ✅ direct backend load
 };
+
 
 // -------- Admin Q&A List (Edit / Delete) --------
 
