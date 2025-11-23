@@ -1,7 +1,7 @@
 /* style.css */
 body {
   font-family: 'Noto Sans Tamil', sans-serif;
-  background-color: #3ef48a;
+  background-color: #d6ccc2;
   margin: 0;
   padding: 10px;
   text-align: center;
@@ -45,7 +45,7 @@ h1 {
   box-sizing: border-box;
   /* overflow: hidden;  <-- delete or comment this */
   background-color: white;
-  overflow: visible;
+  /* overflow: visible; */
 }
 
 
@@ -212,11 +212,12 @@ h2{
 
 /* Wrapper for the crossword and question list */
 #question-section {
-  margin-top: 15px;
+  margin-top: 25px;
   padding: 10px;
   background: #f8f9fa;
   border-radius: 8px;
   font-size: 1.2rem;
+  text-align: center;
 }
 
 /* Title styling */
@@ -257,18 +258,20 @@ h2{
 #admin-toggle:hover {
   background-color: #f57c00;
 }
-
+/* Student save/load buttons */
 #student-controls {
-  margin-top: 12px;
+  margin: 12px auto;
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 8px;
+  max-width: 500px;
 }
 
 #student-controls button {
-  padding: 6px 12px;
+  padding: 8px 14px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   border-radius: 6px;
   border: none;
   cursor: pointer;

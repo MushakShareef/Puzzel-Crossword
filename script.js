@@ -463,7 +463,8 @@ function savePuzzleLocal(key, puzzleData) {
 }
 
 async function savePuzzle() {
-  const key = getTodayKey();
+  const key = getActiveDateKey();
+  
   const puzzleData = {
     grid,
     questions,
