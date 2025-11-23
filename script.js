@@ -47,7 +47,8 @@ async function loadPuzzleFromBackend(dateKey) {
   alert("📥 Trying to load from BACKEND...");  // 👈 Debug alert
 
   try {
-    const res = await fetch(`${BACKEND_URL}/api/crossword/today`);
+    const key = dateKey || getTodayKey();
+    const res = await fetch(`${BACKEND_URL}/api/crossword/today?date=${encodeURIComponent(key)}`);
     if (!res.ok) {
       console.warn("⚠️ No puzzle found on backend for date:", dateKey);
       return null;
