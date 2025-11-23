@@ -292,6 +292,13 @@ h2{
   color: white;
 }
 
+
+.grid-cell:not(.grid-empty):not(.grid-filled):not(.grid-correct):not(.grid-wrong) {
+  background-color: #003366 !important;  /* Dark Blue */
+  pointer-events: none;                  /* Prevent typing */
+}
+
+
 .cell-tag {
   position: absolute;
   top: 2px;
