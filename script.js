@@ -260,18 +260,20 @@ function renderGrid() {
         // start as empty (no user input yet)
         cell.classList.add("grid-empty");
          const q = questions[cellData.qIndex];
-        if (q && q.row === r && q.col === c) {
-          const numSpan = document.createElement("span");
-          numSpan.className = "cell-number";
-          numSpan.textContent = cellData.qIndex + 1;
-          cell.appendChild(numSpan);
+        questions.forEach((q, qi) => {
+        if (q.row === r && q.col === c) {
+          const tag = document.createElement("div");
+          tag.className = "cell-tag";
+          tag.textContent = `${qi + 1} ${q.dir}`;
+          cell.appendChild(tag);
         }
+       });
         // (If you already added clue number span, keep that code here too.)
       } else {
         cell.style.background = "#eee";
         cell.style.pointerEvents = "none";
       }
-
+   
 
       container.appendChild(cell);
     }

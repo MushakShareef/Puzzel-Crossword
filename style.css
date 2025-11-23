@@ -291,3 +291,23 @@ h2{
   background: #ef4444;
   color: white;
 }
+
+.cell-tag {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #000;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 1px 4px;
+  border-radius: 3px;
+  border: 1px solid #444;
+  pointer-events: none;
+}
+@media (max-width: 480px) {
+  .cell-tag {
+    font-size: 11px;
+    padding: 1px 3px;
+  }
+}
