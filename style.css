@@ -188,7 +188,7 @@ h2{
   }
 
   #question-list {
-    font-size: 30px;
+    font-size: 50px;
   }
 
   input.grid-input {
@@ -232,7 +232,7 @@ h2{
   list-style: none;
   padding-left: 0;
   line-height: 1.8;
-  font-size: 1.3rem;
+  font-size: 50px;
   color: #222;
   font-weight: 600;
 }
@@ -296,7 +296,7 @@ h2{
   position: absolute;
   top: 2px;
   left: 2px;
-  font-size: 13px;
+  font-size: 20px;  
   font-weight: bold;
   color: #000;
   background: rgba(255, 255, 255, 0.85);
@@ -305,9 +305,11 @@ h2{
   border: 1px solid #444;
   pointer-events: none;
 }
+/* already font size  is 13 and 11 */
+
 @media (max-width: 480px) {
   .cell-tag {
-    font-size: 11px;
+    font-size: 20px;
     padding: 1px 3px;
   }
 }
