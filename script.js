@@ -760,6 +760,116 @@ window.onload = async () => {
 };
 
 
+
+
+function gradeAndDownload() {
+  inputModeEnded = true;   // முதலில் முடிந்தது என lock செய்கிறோம்
+  checkAnswer();           // இதனால் lastEvaluation update ஆகும்
+
+  if (!lastEvaluation) {
+    alert("முதலில் பதில்களை நிரப்புங்கள்.");
+    return;
+  }
+
+  downloadResultImage();   // படம் உருவாக்கி download செய்வோம்
+}
+
+
+
+
+function downloadResultImage() {
+  if (!lastEvaluation) {
+    alert("முதலில் பதில்களை நிரப்பி, சரிபார்க்கவும்.");
+    return;
+  }
+
+  const dateKey = getActiveDateKey();
+  const { correctCount, totalQuestions } = lastEvaluation;
+
+  const cellSize = 60;
+  const marginTop = 120;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = cellSize * gridSize;
+  canvas.height = marginTop + cellSize * gridSize;
+
+  const ctx = canvas.getContext("2d");
+
+  // White background
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "#000";
+  ctx.font = "24px Noto Sans Tamil, sans-serif";
+  ctx.fillText("BK Spiritual Crossword", 10, 30);
+
+  ctx.font = "18px Noto Sans Tamil, sans-serif";
+  ctx.fillText(`தேதி: ${dateKey}`, 10, 65);
+  ctx.fillText(`மதிப்பெண்: ${correctCount} / ${totalQuestions}`, 10, 95);
+
+  const allInputs = document.querySelectorAll(".grid-input");
+  const typedMap = {};
+  const cellClassMap = {};
+
+  allInputs.forEach(input => {
+    const r = Number(input.dataset.row);
+    const c = Number(input.dataset.col);
+    const key = `${r},${c}`;
+    typedMap[key] = input.value.trim();
+
+    const cell = input.parentElement;
+    cellClassMap[key] = {
+      correct: cell.classList.contains("grid-correct"),
+      wrong: cell.classList.contains("grid-wrong"),
+      filled: cell.classList.contains("grid-filled"),
+      empty: cell.classList.contains("grid-empty")
+    };
+  });
+
+  for (let r = 0; r < gridSize; r++) {
+    for (let c = 0; c < gridSize; c++) {
+      const x = c * cellSize;
+      const y = marginTop + r * cellSize;
+      const key = `${r},${c}`;
+
+      if (!grid[r][c]) {
+        ctx.fillStyle = "#003366";
+        ctx.fillRect(x, y, cellSize, cellSize);
+        ctx.strokeRect(x, y, cellSize, cellSize);
+        continue;
+      }
+
+      // cell colours
+      let bg = "#FFF9E5"; // default empty
+      const info = cellClassMap[key] || {};
+      if (info.correct) bg = "#7CFC00";
+      else if (info.wrong) bg = "#FF6961";
+      else if (info.filled) bg = "#E6F2FF";
+
+      ctx.fillStyle = bg;
+      ctx.fillRect(x, y, cellSize, cellSize);
+      ctx.strokeRect(x, y, cellSize, cellSize);
+
+      const txt = typedMap[key] || "";
+      if (txt) {
+        ctx.fillStyle = "#000";
+        ctx.font = "32px Noto Sans Tamil, sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(txt, x + cellSize / 2, y + cellSize / 2);
+      }
+    }
+  }
+
+  // Download as PNG
+  const dataURL = canvas.toDataURL("image/png");
+  const a = document.createElement("a");
+  a.href = dataURL;
+  a.download = `crossword-${dateKey}-score-${correctCount}.png`;
+  a.click();
+}
+
+
 // -------- Admin Q&A List (Edit / Delete) --------
 
 // Rebuild grid from questions after editing/deleting
