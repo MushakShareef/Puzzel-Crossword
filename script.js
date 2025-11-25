@@ -715,6 +715,16 @@ async function loadPuzzle(dateKey) {
   // 1) முதலில் backend-லிருந்து முயற்சி
   const data = await loadPuzzleFromBackend(dateKey);
 
+  
+  // 🗓 Puzzle Date UI display
+  if (data && data.date) {
+    const dateEl = document.getElementById("puzzle-date");
+    if (dateEl) {
+      dateEl.textContent = `🗓 புதிர் தேதி: ${data.date}`;
+    }
+  }
+
+
   if (!data) {
     alert("❗ Backend-ல் இந்த தேதிக்கான புதிர் கிடைக்கவில்லை.");
     return;
@@ -758,13 +768,6 @@ window.onload = async () => {
   const todayKey = getTodayKey();
   await loadPuzzle(todayKey);  // ✅ direct backend load
 };
-
-
-// Show puzzle date on screen
-if (data.date) {
-  const dateEl = document.getElementById("puzzle-date");
-  dateEl.textContent = `🗓 புதிர் தேதி: ${data.date}`;
-}
 
 
 
