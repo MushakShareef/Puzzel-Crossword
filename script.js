@@ -742,6 +742,12 @@ async function loadSelectedPuzzle() {
   await loadPuzzle(key);
 }
 
+// Show puzzle date on screen
+if (data.date) {
+  const dateEl = document.getElementById("puzzle-date");
+  dateEl.textContent = `🗓 புதிர் தேதி: ${data.date}`;
+}
+
 
 // Finish input and save puzzle for that date
 document.getElementById("finish-input").addEventListener("click", () => {
