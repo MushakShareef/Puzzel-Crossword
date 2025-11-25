@@ -715,14 +715,17 @@ async function loadPuzzle(dateKey) {
   // 1) முதலில் backend-லிருந்து முயற்சி
   const data = await loadPuzzleFromBackend(dateKey);
 
-  
+
   // 🗓 Puzzle Date UI display
-  if (data && data.date) {
+  if (data.date) {
     const dateEl = document.getElementById("puzzle-date");
     if (dateEl) {
-      dateEl.textContent = `🗓 புதிர் தேதி: ${data.date}`;
+      const d = new Date(data.date);
+      const formatted = d.toLocaleDateString("ta-IN"); // 24/11/2025 (தமிழ் digits)
+      dateEl.textContent = `🗓 புதிர் தேதி: ${formatted}`;
     }
   }
+
 
 
   if (!data) {
