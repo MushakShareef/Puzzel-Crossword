@@ -69,6 +69,8 @@ let questions = [];
 let inputModeEnded = false;
 
 let currentPuzzleDate = null;
+let lastEvaluation = null; // மதிப்பெண் + per-question result சேமிக்க
+
 
 
 const directions = [
@@ -295,67 +297,286 @@ function renderQuestions() {
 function checkAnswer() {
   const allInputs = document.querySelectorAll(".grid-input");
 
-  // 1) Handle empty/filled state for every cell
+  // 1) எல்லா cellக்களுக்கும் basic empty/filled state set பண்ணுறது
   allInputs.forEach(input => {
     const cell = input.parentElement;
     const val = input.value.trim();
 
-    // Remove old state
-    cell.classList.remove("grid-empty", "grid-filled", "grid-correct", "grid-wrong");
+    cell.classList.remove(
+      "grid-empty",
+      "grid-filled",
+      "grid-correct",
+      "grid-wrong"
+    );
 
     if (val.length === 0) {
-      // No text typed → empty colour
       cell.classList.add("grid-empty");
     } else {
-      // User typed something → filled colour (before checking correctness)
       cell.classList.add("grid-filled");
     }
   });
 
-  // 2) Before "முடிந்தது", do NOT check correctness
+  // 2) Admin "முடிந்தது" அழுத்தல முன்னாடி நிறம் check பண்ணவேண்டாம்
   if (!inputModeEnded) {
+    lastEvaluation = null; // இன்னும் final evaluation இல்லை
     return;
   }
 
-  // 3) After "முடிந்தது" – check right/wrong for each word
-  let answerMap = {};
+  // 3) இப்போ தான் முழு crosswordக்கு evaluation செய்கிறோம்
+  const evalResult = evaluatePuzzle(); // கீழே define பண்ணிருக்கோம்
+  lastEvaluation = evalResult;
+
+  const { cellStatus } = evalResult;
+
+  // 4) ஒவ்வொரு cellக்கும் final correct/wrong colour apply பண்ணுறது
   allInputs.forEach(input => {
-    const qIndex = input.dataset.qIndex;
-    if (!answerMap[qIndex]) answerMap[qIndex] = [];
-    answerMap[qIndex].push(input);
+    const cell = input.parentElement;
+    const r = Number(input.dataset.row);
+    const c = Number(input.dataset.col);
+    const key = `${r},${c}`;
+
+    const status = cellStatus[key];
+    if (!status) return;
+
+    cell.classList.remove("grid-correct", "grid-wrong");
+
+    if (status.wrongCount > 0) {
+      // எந்த ஒரு word ஆனாலும் இந்த cell wrong ஆனால் → Red
+      cell.classList.remove("grid-empty", "grid-filled");
+      cell.classList.add("grid-wrong");
+    } else if (status.correctCount > 0) {
+      // எல்லா words–மும் இந்த cell–ஐச் சரியா வைத்திருந்தா → Green
+      cell.classList.remove("grid-empty", "grid-filled");
+      cell.classList.add("grid-correct");
+    }
+    // இல்லனா அந்த cell grid-filled / grid-empty நிறத்திலேயே இருக்கும்
+  });
+}
+
+
+
+
+
+function evaluatePuzzle() {
+  const allInputs = document.querySelectorAll(".grid-input");
+
+  // row,col -> input element map
+  const cellInputMap = {};
+  allInputs.forEach(input => {
+    const r = Number(input.dataset.row);
+    const c = Number(input.dataset.col);
+    const key = `${r},${c}`;
+    cellInputMap[key] = input;
   });
 
-  for (let qIndex in answerMap) {
-    const { a } = questions[qIndex];
-    const inputs = answerMap[qIndex];
+  const perQuestion = [];
+  const cellStatus = {}; // key -> { filled, correctCount, wrongCount }
 
-    const typed = inputs.map(input => input.value.trim()).join("");
-
-    const correctLetters = splitTamilLetters(a);
-    const userLetters    = splitTamilLetters(typed);
-
-    const isCorrect =
-      userLetters.length === correctLetters.length &&
-      userLetters.length > 0 &&
-      correctLetters.every((ch, i) => ch === userLetters[i]);
-
-    // Remove previous correct/wrong state, then apply
-    inputs.forEach(input => {
-      const cell = input.parentElement;
-
-      // If user cleared some box later, userLetters length may be different,
-      // so no green/red; it will remain just filled/empty from above.
-      if (isCorrect) {
-        cell.classList.remove("grid-filled", "grid-empty");
-        cell.classList.add("grid-correct");
-      } else if (userLetters.length === correctLetters.length && userLetters.length > 0) {
-        cell.classList.remove("grid-filled", "grid-empty");
-        cell.classList.add("grid-wrong");
-      }
-      // If userLetters shorter than correctLetters, cell stays as grid-filled / grid-empty
-    });
+  function ensureCellStatus(key) {
+    if (!cellStatus[key]) {
+      cellStatus[key] = { filled: false, correctCount: 0, wrongCount: 0 };
+    }
+    return cellStatus[key];
   }
+
+  for (let qi = 0; qi < questions.length; qi++) {
+    const q = questions[qi];
+    const letters = q.letters || splitTamilLetters(q.a); // correct letters
+
+    let typedCells = [];
+    let allCellsExist = true;
+
+    for (let i = 0; i < letters.length; i++) {
+      const r = q.row + (q.dir === "⬇" ? i : 0);
+      const c = q.col + (q.dir === "➡" ? i : 0);
+      const key = `${r},${c}`;
+      const input = cellInputMap[key];
+
+      if (!input) {
+        allCellsExist = false;
+        break;
+      }
+
+      const val = input.value.trim();
+      typedCells.push(val);
+
+      const st = ensureCellStatus(key);
+      if (val.length > 0) {
+        st.filled = true;
+      }
+    }
+
+    let isCorrect = false;
+
+    if (allCellsExist) {
+      const typedWordRaw = typedCells.join("");
+      const userLetters = splitTamilLetters(typedWordRaw);
+
+      const correctLetters = letters;
+      const sameLength =
+        userLetters.length === correctLetters.length && userLetters.length > 0;
+      const allMatch =
+        sameLength &&
+        correctLetters.every((ch, idx) => userLetters[idx] === ch);
+
+      isCorrect = sameLength && allMatch;
+    }
+
+    perQuestion[qi] = isCorrect;
+
+    // இந்த question சேர்ந்த cellகளுக்கு correct/wrong counter update
+    for (let i = 0; i < letters.length; i++) {
+      const r = q.row + (q.dir === "⬇" ? i : 0);
+      const c = q.col + (q.dir === "➡" ? i : 0);
+      const key = `${r},${c}`;
+
+      const st = ensureCellStatus(key);
+      const input = cellInputMap[key];
+      const val = input ? input.value.trim() : "";
+
+      if (!val) continue; // காலியாக இருந்தா correct/wrong எதுவும் கூட்ட வேண்டாம்
+
+      if (isCorrect) {
+        st.correctCount += 1;
+      } else {
+        // முழு length type பண்ணியிருக்கேனா? (சில logic softஆ ignore செய்யலாம்)
+        st.wrongCount += 1;
+      }
+    }
+  }
+
+
+
+  function gradeAndDownload() {
+  // மாணவர் "மதிப்பெண் + படம்" விரும்புறப்போ இதை call பண்ணலாம்
+  inputModeEnded = true;   // இப்போ இருந்து correct/wrong check செய்யலாம்
+  checkAnswer();           // lastEvaluation set ஆகும்
+
+  if (!lastEvaluation) {
+    alert("முதலில் பதில்களை நிரப்புங்கள்.");
+    return;
+  }
+
+  downloadResultImage();
 }
+
+function downloadResultImage() {
+  if (!lastEvaluation) {
+    alert("முதலில் பதில்களை நிரப்பி, சரிபார்க்கவும்.");
+    return;
+  }
+
+  const dateKey = getActiveDateKey();
+  const { correctCount, totalQuestions } = lastEvaluation;
+
+  const cellSize = 60;
+  const size = gridSize;       // 10 x 10
+  const marginTop = 120;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = cellSize * size;
+  canvas.height = marginTop + cellSize * size;
+
+  const ctx = canvas.getContext("2d");
+
+  // Background
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Title + date + score
+  ctx.fillStyle = "#111827";
+  ctx.font = "24px Noto Sans Tamil, sans-serif";
+  ctx.textBaseline = "top";
+  ctx.fillText("BK Spiritual Crossword", 10, 10);
+
+  ctx.font = "18px Noto Sans Tamil, sans-serif";
+  ctx.fillText(`தேதி: ${dateKey}`, 10, 42);
+  ctx.fillText(`மதிப்பெண்: ${correctCount} / ${totalQuestions}`, 10, 70);
+
+  // row,col -> typed letter
+  const allInputs = document.querySelectorAll(".grid-input");
+  const typedMap = {};
+  const cellClassMap = {};
+
+  allInputs.forEach(input => {
+    const r = Number(input.dataset.row);
+    const c = Number(input.dataset.col);
+    const key = `${r},${c}`;
+    typedMap[key] = input.value.trim();
+
+    const cell = input.parentElement;
+    cellClassMap[key] = {
+      correct: cell.classList.contains("grid-correct"),
+      wrong: cell.classList.contains("grid-wrong"),
+      filled: cell.classList.contains("grid-filled"),
+      empty: cell.classList.contains("grid-empty")
+    };
+  });
+
+  // Draw grid
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      const x = c * cellSize;
+      const y = marginTop + r * cellSize;
+
+      if (!grid[r][c]) {
+        // blocked cell
+        ctx.fillStyle = "#003366"; // Dark blue
+        ctx.fillRect(x, y, cellSize, cellSize);
+        ctx.strokeStyle = "#000000";
+        ctx.strokeRect(x, y, cellSize, cellSize);
+        continue;
+      }
+
+      const key = `${r},${c}`;
+      const info = cellClassMap[key] || {};
+      let bg = "#FFF9E5"; // default empty colour
+
+      if (info.correct) bg = "#7CFC00";     // green
+      else if (info.wrong) bg = "#FF6961"; // red
+      else if (info.filled) bg = "#E6F2FF"; // filled blue
+
+      ctx.fillStyle = bg;
+      ctx.fillRect(x, y, cellSize, cellSize);
+
+      ctx.strokeStyle = "#000000";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x, y, cellSize, cellSize);
+
+      const txt = typedMap[key] || "";
+      if (txt) {
+        ctx.fillStyle = "#000000";
+        ctx.font = "32px Noto Sans Tamil, sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(txt, x + cellSize / 2, y + cellSize / 2);
+      }
+    }
+  }
+
+  // Download as PNG
+  const dataURL = canvas.toDataURL("image/png");
+  const a = document.createElement("a");
+  a.href = dataURL;
+  a.download = `crossword-${dateKey}-score-${correctCount}.png`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+
+  const correctCount = perQuestion.filter(Boolean).length;
+
+  return {
+    totalQuestions: questions.length,
+    correctCount,
+    perQuestion,
+    cellStatus
+  };
+}
+
+
+
 
 
 // -------- Admin Panel Logic --------

@@ -91,7 +91,7 @@ body {
 /* Make letters bold and clear always */
 .grid-input {
   font-weight: 700;
-  font-size: 1.5rem;   /* or whatever you like */
+  font-size: 1.3rem;   /* or whatever you like */
   color: #111827;
 }
 
@@ -192,7 +192,7 @@ h2{
   }
 
   input.grid-input {
-    font-size: 50px;
+    font-size: 40px;
   }
 }
 .grid-cell {
@@ -303,11 +303,11 @@ h2{
   position: absolute;
   top: 2px;
   left: 2px;
-  font-size: 32px;  
+  font-size: 30px;  
   font-weight: bold;
   color: #000;
   background: rgba(255, 255, 255, 0.85);
-  padding: 2px 6px;
+  padding: 2px 5px;
   border-radius: 3px;
   border: 1px solid #444;
   pointer-events: none;
@@ -316,7 +316,7 @@ h2{
 
 @media (max-width: 480px) {
   .cell-tag {
-    font-size: 25px;
-    padding: 2px 5px;
+    font-size: 20px;
+    padding: 2px 4px;
   }
 }
