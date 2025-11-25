@@ -261,6 +261,7 @@ h2{
 /* Student save/load buttons */
 #student-controls {
   margin: 12px auto;
+  margin-top: 80px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
