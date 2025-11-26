@@ -951,3 +951,39 @@ if ("serviceWorker" in navigator) {
       });
   });
 }
+
+async function fetchWithRetry(url, options = {}, retries = 3, delayMs = 3000) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(url, options);
+
+      // If response is OK, return it
+      if (response.ok) {
+        return response;
+      }
+
+      // If 404/500/etc and we still have retries, wait and try again
+      console.warn(
+        `Request failed (status ${response.status}), attempt ${attempt} of ${retries}`
+      );
+
+      if (attempt < retries) {
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+        continue;
+      }
+
+      // No more retries → throw error
+      throw new Error(`Request failed after ${retries} attempts (status ${response.status})`);
+    } catch (err) {
+      console.warn(`Network error on attempt ${attempt} of ${retries}:`, err);
+
+      if (attempt < retries) {
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+        continue;
+      }
+
+      // No more retries
+      throw err;
+    }
+  }
+}
