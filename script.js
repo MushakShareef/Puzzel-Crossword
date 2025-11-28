@@ -44,7 +44,7 @@ async function savePuzzleToBackend(key, puzzleData) {
 
 
 async function loadPuzzleFromBackend(dateKey) {
-  alert("📥 Trying to load from BACKEND...");  // 👈 Debug alert
+  alert(" Remember Baba for one minute pls");  // 👈 Debug alert
 
   try {
     const key = dateKey || getTodayKey();
